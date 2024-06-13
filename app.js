@@ -21,6 +21,7 @@ const PORT = process.env.PORT || 4000;
 
 (async () => {
     try {
+        console.log(process.env.MONGODB_URI)
         await dbConnection(process.env.MONGODB_URI);
         console.log("DB instance initialized and connected to!");
         app.listen(PORT, () => {
