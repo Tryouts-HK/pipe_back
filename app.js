@@ -14,7 +14,7 @@ import dotenv from 'dotenv'
 dotenv.config();
 
 // Importing the DB Connection
-import dbConnection from './db/connectToDb.js';
+import dbConnection from './db/connect_to_db.js';
 
 const PORT = process.env.PORT || 4000;
 
@@ -79,7 +79,7 @@ app.use(function (request, response, next) {
     next()
 })
 
-import authRoutes from './routes/authRoutes.js';
+import authRoutes from './routes/auth_routes.js';
 import apiRoutes from './routes/api_index.js';
 
 // Authentication Routes
