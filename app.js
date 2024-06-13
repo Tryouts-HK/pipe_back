@@ -1,15 +1,7 @@
-
-// import express
-// import helmet
-// import xss-clear
-// import express-rate-limit
-// cookie-session
-// hpp
-// passport for auth;
 import express from 'express'
 const app = express();
 import passport from 'passport';
-import passportConfig from './config/passport-setup.js'
+import passportConfig from './config/passport_setup.js'
 passportConfig(passport);
 import cookieSession from 'cookie-session';
 import rateLimit from 'express-rate-limit';
