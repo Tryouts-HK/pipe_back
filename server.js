@@ -80,6 +80,8 @@ app.use(function (request, response, next) {
     next()
 })
 
+// testing new build
+
 import authRoutes from './routes/auth_routes.js';
 import apiRoutes from './routes/api_index.js';
 
