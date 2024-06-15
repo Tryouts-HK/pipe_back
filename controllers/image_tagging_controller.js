@@ -15,3 +15,33 @@ const image_getter = async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
+const all_image_getters = async (req, res) => {
+    try {
+      // Get the page number from the query parameters, default to 1 if not provided
+      const page = parseInt(req.query.page) || 1;
+      const limit = 10;
+      const skip = (page - 1) * limit;
+  
+      // Find tagged images with pagination
+      const taggedImages = await Image.find({ isTagged: true })
+        .skip(skip)
+        .limit(limit);
+  
+      // Get the total number of tagged images
+      const totalTaggedImages = await Image.countDocuments({ isTagged: true });
+  
+      // Calculate total pages
+      const totalPages = Math.ceil(totalTaggedImages / limit);
+  
+      res.status(200).json({
+        page,
+        totalPages,
+        totalTaggedImages,
+        taggedImages,
+      });
+    } catch (error) {
+      console.error('Error fetching tagged images:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
