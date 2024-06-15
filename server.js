@@ -91,6 +91,10 @@ app.use(`/${process.env.API_BASE_URL}/auth/`, authRoutes);
 // Other Api routes
 app.use(`/${process.env.API_BASE_URL}/`, apiRoutes);
 
+app.get('/', (req, res)=> {
+    res.send("inshallah brother");
+})
+
 
 app.get('*', (req, res) => {
     res.status(400).json('404! Page not found')
