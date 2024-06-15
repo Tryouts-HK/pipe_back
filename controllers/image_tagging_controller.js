@@ -45,3 +45,44 @@ const all_image_getters = async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
+// Set up Multer for file uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads/'); // Directory to save uploaded files
+    },
+    filename: function (req, file, cb) {
+      cb(null, `${Date.now()}-${file.originalname}`);
+    }
+  });
+  
+  const upload = multer({ storage: storage });
+  
+  // Controller to upload images
+
+  //   router.post('/upload', upload.single('image'),
+  const image_controller = 
+   async (req, res) => {
+    try {
+      // Ensure file is provided
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+  
+      // Save image metadata to the database
+      const newImage = new Image({
+        url: path.join('uploads', req.file.filename),
+        isTagged: false
+      });
+  
+      const savedImage = await newImage.save();
+  
+      res.status(201).json({
+        message: 'Image uploaded successfully',
+        image: savedImage
+      });
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
