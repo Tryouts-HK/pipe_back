@@ -94,7 +94,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Contact
 
 If you have any questions or suggestions, feel free to open an issue or contact us directly.
-
----
-
-Feel free to customize the README file to better fit your project's specifics, such as adding more detailed setup instructions, usage examples, or contribution guidelines.
