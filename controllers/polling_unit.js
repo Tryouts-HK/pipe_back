@@ -1,8 +1,8 @@
-const PollingStation = require('../models/PollingStation');
+import PollingUnit, { find, findById, findByIdAndUpdate, findByIdAndDelete, } from '../models/PollingStation';
 
-const getAllPollingStations = async (req, res) => {
+const getAllPollingUnits = async (req, res) => {
   try {
-    const stations = await PollingStation.find();
+    const stations = await find();
     res.status(200).json(stations);
   } catch (error) {
     console.error('Error fetching polling stations:', error);
@@ -10,9 +10,9 @@ const getAllPollingStations = async (req, res) => {
   }
 };
 
-const getPollingStationById = async (req, res) => {
+const getPollingUnitById = async (req, res) => {
   try {
-    const station = await PollingStation.findById(req.params.id);
+    const station = await findById(req.params.id);
     if (!station) {
       return res.status(404).json({ error: 'Polling Station not found' });
     }
@@ -23,9 +23,9 @@ const getPollingStationById = async (req, res) => {
   }
 };
 
-const addPollingStation = async (req, res) => {
+const addPollingUnit = async (req, res) => {
   try {
-    const newStation = new PollingStation(req.body);
+    const newStation = new PollingUnit(req.body);
     const savedStation = await newStation.save();
     res.status(201).json(savedStation);
   } catch (error) {
@@ -34,9 +34,9 @@ const addPollingStation = async (req, res) => {
   }
 };
 
-const updatePollingStation = async (req, res) => {
+const updatePollingUnit = async (req, res) => {
   try {
-    const updatedStation = await PollingStation.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updatedStation = await findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updatedStation) {
       return res.status(404).json({ error: 'Polling Station not found' });
     }
@@ -47,9 +47,9 @@ const updatePollingStation = async (req, res) => {
   }
 };
 
-const deletePollingStation = async (req, res) => {
+const deletePollingUnit = async (req, res) => {
   try {
-    const deletedStation = await PollingStation.findByIdAndDelete(req.params.id);
+    const deletedStation = await findByIdAndDelete(req.params.id);
     if (!deletedStation) {
       return res.status(404).json({ error: 'Polling Station not found' });
     }
@@ -60,10 +60,8 @@ const deletePollingStation = async (req, res) => {
   }
 };
 
-module.exports = {
-  getAllPollingStations,
-  getPollingStationById,
-  addPollingStation,
-  updatePollingStation,
-  deletePollingStation,
-};
+export const getAllPollingStations = getAllPollingUnits;
+export const getPollingStationById = getPollingUnitById;
+export const addPollingStation = addPollingUnit;
+export const updatePollingStation = updatePollingUnit;
+export const deletePollingStation = deletePollingUnit;
