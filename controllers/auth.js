@@ -1,6 +1,6 @@
 import passport from 'passport';
 import Auth from "../models/auth/auth.js";
-import { verifyToken } from "../utils/tokens.js";
+import { verifyToken } from "../utils/token.js";
 import { switchProfile } from "../utils/switchHandler.js";
 import errorHandler from '../utils/errorHandler.js';
 import { ROLE_CODE_DECODER, ROLE_ENCODER } from '../utils/constant.js';
