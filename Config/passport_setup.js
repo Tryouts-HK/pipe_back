@@ -2,7 +2,7 @@ import { Strategy as localStrategy } from 'passport-local';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import User from '../models/user.js';
+import User from '../models/account/user.js';
 
 const passportConfig = (passport) => {
 

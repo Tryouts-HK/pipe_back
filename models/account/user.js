@@ -1,7 +1,7 @@
 // model for user.js
 
 import { Schema, model } from 'mongoose';
-import Auth from './auth.js';
+import Auth from '../auth/auth.js';
 import bcrypt from 'bcrypt';
 import pkg from 'validator';
 const { isEmail } = pkg;

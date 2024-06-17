@@ -1,5 +1,4 @@
 
-// ensure logged out
 
 // ensure logged in
 
@@ -23,7 +22,7 @@ export function ensureLoggedIn(options) {
     }
 }
 
-
+// ensure logged out
 export function ensureLoggedOut(options) {
     if (typeof options == 'string') {
         options = { redirectTo: options }
