@@ -6,7 +6,6 @@ passportConfig(passport);
 import cookieSession from 'cookie-session';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
-import xss from 'xss-clean'
 import ExpressMongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
 
@@ -55,7 +54,6 @@ app.use(ExpressMongoSanitize());
 app.use(hpp({
     // whitelist: [] //pass the parameter you want to omit
 }))
-app.use(xss());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieSession({
