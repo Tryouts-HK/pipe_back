@@ -94,6 +94,7 @@ app.get('/', (req, res)=> {
 })
 
 
+// route for page not found
 app.get('*', (req, res) => {
     res.status(400).json('404! Page not found')
 })
