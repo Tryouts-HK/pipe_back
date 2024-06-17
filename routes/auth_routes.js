@@ -1,6 +1,6 @@
 import express from 'express'
 const Router = express.Router();
-import { local_scope, logout_post, register_post } from '../controllers/auth.js';
+import { local_scope, log_out, register_post } from '../controllers/auth.js';
 import { ensureLoggedIn, ensureLoggedOut } from '../middlewares/authenticate.js';
 
 Router.route('/register')
@@ -18,7 +18,7 @@ Router.route('/login')
 Router.route('/logout')
     .post(
         ensureLoggedIn(),
-        logout_post);
+        log_out);
 
 
 export default Router;

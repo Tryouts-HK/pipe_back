@@ -1,9 +1,9 @@
 import passport from 'passport';
 import Auth from "../models/auth/auth.js";
 import { verifyToken } from "../utils/token.js";
-import { switchProfile } from "../utils/switchHandler.js";
-import errorHandler from '../utils/errorHandler.js';
-import { ROLE_CODE_DECODER, ROLE_ENCODER } from '../utils/constant.js';
+import { switchProfile } from "../utils/switch_handler.js";
+import errorHandler from '../utils/error_handler.js';
+// import { ROLE_ENCODER } from '../utils/constant.js';
 
 
 export const register_get = (req, res) => {

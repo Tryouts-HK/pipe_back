@@ -1,10 +1,6 @@
-import Ambulance from "../models/facilities/Ambulance.js";
-import Clinic from "../models/facilities/Clinic.js";
-import Hospital from "../models/facilities/Hospital.js";
-import Pharmacy from "../models/facilities/Pharmacy.js";
-import User from "../models/patients/User.js";
-import Doctor from "../models/professionals/Doctor.js";
-import Pharmacist from "../models/professionals/Pharmacist.js";
+
+import User from "../models/account/user.js";
+
 
 
 export const switchProfile = (role) => {
