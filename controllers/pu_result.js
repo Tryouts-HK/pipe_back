@@ -1,4 +1,4 @@
-import PollingUnitResult from '../models/polling_unit.js';
+import PollingUnitResult from '../models/polling_unit_result.js';
 
 const RESULT_PER_PAGE = 100;
 

@@ -91,11 +91,15 @@ const pollingUnitResultSchema = new Schema({
   stamped: {
     type: Boolean,
     required: [true, 'Stamped field is required']
+  },
+  tagged: {
+    type: Boolean,
+    default: false,
   }
 }, {
   timestamps: true
 });
 
-const PollingUnitResult = model('PollingUnitResult', pollingUnitResultSchema);
+const PollingUnitResult = model('Polling_Unit_Result', pollingUnitResultSchema);
 
 export default PollingUnitResult;
