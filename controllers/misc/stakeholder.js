@@ -1,4 +1,4 @@
-const Stakeholder = require('../models/Stakeholder');
+const Stakeholder = require('../../models/misc/stakeholder');
 
 const getAllStakeholders = async (req, res) => {
   try {

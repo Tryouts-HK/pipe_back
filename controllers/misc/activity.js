@@ -1,4 +1,4 @@
-const Activity = require('../models/Activity');
+const Activity = require('../../models/misc/activity');
 
 const getAllActivities = async (req, res) => {
   try {

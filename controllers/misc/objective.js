@@ -1,4 +1,4 @@
-const Objective = require('../models/Objective');
+const Objective = require('../../models/misc/objective');
 
 const getAllObjectives = async (req, res) => {
   try {

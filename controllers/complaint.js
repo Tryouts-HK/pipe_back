@@ -71,15 +71,44 @@ export const createComplaint = async (req, res) => {
   }
 };
 
+const RESULT_PER_PAGE = 5;
+
 // Controller to fetch all complaints
 export const getAllComplaints = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || RESULT_PER_PAGE;
+
   try {
-    const complaints = await Complaint.find();
-    res.status(200).json(complaints);
+    const skip = (page - 1) * limit;
+
+    // Query database to get polling units with pagination
+    const complaints = await Complaint.find()
+      .skip(skip)
+      .limit(limit);
+
+    // Count total number of polling units (for pagination info)
+    const totalCount = await Complaint.countDocuments();
+
+    // Calculate totalPages
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Prepare pagination metadata
+    const pagination = {
+      currentPage: page,
+      perPage: limit,
+      totalItems: totalCount,
+      totalPages: totalPages
+    };
+
+    res.status(200).json({
+      complaints: complaints,
+      pagination
+    });
   } catch (error) {
-    console.error('Error fetching complaints:', error);
+    console.error('Error fetching complaints', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
+ 
 };
 
 // Controller to fetch a single complaint by ID
