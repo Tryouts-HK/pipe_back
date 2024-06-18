@@ -1,10 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-// Custom validator function for enum values
-const validateEnum = (value) => {
-  const enums = ['Low', 'Medium', 'High']; // Replace with your enum values
-  return enums.includes(value);
-};
+
 
 const complaintSchema = new Schema({
   text_content: {
@@ -22,7 +18,6 @@ const complaintSchema = new Schema({
       message: 'Invalid impact level. Acceptable Values: Low ||Medium || High',
     },
     required: [true, 'Impact level is required'],
-    // validate: [validateEnum, 'Invalid impact level']
   },
   urgency: {
     type: String,
@@ -31,7 +26,6 @@ const complaintSchema = new Schema({
       message: 'Invalid urgency. Acceptable Values: Minor || Normal || Immediate'
     },
     required: [true, 'Urgency is required'],
-    // validate: [validateEnum, 'Invalid urgency']
   },
   video_evidence: {
     type: [
