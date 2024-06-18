@@ -34,6 +34,13 @@ const errorHandler = (error) => {
             errorObject[properties.path] = properties.message;
         })
     }
+    if (error.message.includes('Polling_Unit_Result validation failed')) {
+        const pinPoint = Object.values(error.errors);
+        // console.log(pinPoint);
+        pinPoint.forEach(({ properties }) => {
+            errorObject[properties.path] = properties.message;
+        })
+    }
     if (error.message === 'jwt expired') {
         errorObject.email = "Token Expired!. Please, reset your Account Password again";
     }

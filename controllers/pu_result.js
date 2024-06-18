@@ -1,4 +1,5 @@
 import PollingUnitResult from '../models/polling_unit_result.js';
+import errorHandler from '../utils/error_handler.js';
 
 const RESULT_PER_PAGE = 100;
 
@@ -8,8 +9,9 @@ export const createPollingUnitResult = async (req, res) => {
     const savedResult = await newResult.save();
     res.status(201).json(savedResult);
   } catch (error) {
-    console.error('Error creating polling unit result:', error);
-    res.status(400).json({ error: error.message });
+    // console.error('Error creating polling unit result:', error);
+    const cleanedError = errorHandler(error);
+    res.status(400).json({ "status": "error", "message": cleanedError });
   }
 };
 
