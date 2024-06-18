@@ -16,7 +16,7 @@ const complaintSchema = new Schema({
   },
   urgency: {
     type: String,
-    enum: ['Low', 'Medium', 'High'],
+    enum: ['Minor', 'Normal', 'Immediate'],
     required: [true, 'Urgency is required'] // Custom error message for required field
   },
   video_evidence: {
