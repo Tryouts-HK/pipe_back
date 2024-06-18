@@ -44,10 +44,6 @@ const pollingUnitResultSchema = new Schema({
     required: [true, 'Polling Unit code is required'],
     match: [/^\d{3}$/, 'Polling Unit code must be 3 digits']
   },
-  pollingUnitName: {
-    type: String,
-    required: [true, 'Polling Unit name is required']
-  },
   votersOnRegister: {
     type: Number,
     required: [true, 'Number of voters on register is required']
@@ -86,15 +82,22 @@ const pollingUnitResultSchema = new Schema({
   },
   tampered: {
     type: Boolean,
-    required: [true, 'Tampered field is required']
+    required: [true, 'Tampered field is required'],
+    default: false,
+
   },
   stamped: {
     type: Boolean,
-    required: [true, 'Stamped field is required']
+    required: [true, 'Stamped field is required'],
+    default: false,
   },
   tagged: {
     type: Boolean,
     default: false,
+  },
+  imageUrl: {
+    required: [true, 'image url is required'],
+    type: String,
   }
 }, {
   timestamps: true

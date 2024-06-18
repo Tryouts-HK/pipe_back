@@ -1,17 +1,97 @@
 import PollingUnitResult from '../models/polling_unit_result.js';
 import errorHandler from '../utils/error_handler.js';
 
-const RESULT_PER_PAGE = 100;
+const RESULT_PER_PAGE = 50;
 
+// Define a function to process the input data
+const processPollingUnitResultInput = (data) => {
+  const {
+    stateCode,
+    lgaCode,
+    wardCode,
+    puCode,
+    votersOnRegister,
+    accreditedVoters,
+    ballotPapersIssued,
+    unusedBallotPapers,
+    spoiledBallotPapers,
+    rejectedBallots,
+    validVotes,
+    totalValidVotes,
+    totalUsedBallotPapers,
+    tampered,
+    stamped,
+    tagged,
+    // imageUrl
+  } = data;
+
+  // console.log('printing valid votes');
+  // console.log(validVotes);
+
+  // Ensure validVotes is parsed correctly
+  let parsedValidVotes;
+  try {
+    parsedValidVotes = JSON.parse(validVotes);
+  } catch (error) {
+    console.log(error);
+    throw new Error('Invalid format for validVotes, ');
+  }
+
+  return {
+    stateCode,
+    lgaCode,
+    wardCode,
+    puCode,
+    votersOnRegister: Number(votersOnRegister),
+    accreditedVoters: Number(accreditedVoters),
+    ballotPapersIssued: Number(ballotPapersIssued),
+    unusedBallotPapers: Number(unusedBallotPapers),
+    spoiledBallotPapers: Number(spoiledBallotPapers),
+    rejectedBallots: Number(rejectedBallots),
+    validVotes: parsedValidVotes,
+    totalValidVotes: Number(totalValidVotes),
+    totalUsedBallotPapers: Number(totalUsedBallotPapers),
+    tampered: tampered === 'true',
+    stamped: stamped === 'true',
+    tagged: tagged === 'true',
+    // imageUrl
+  };
+};
+
+// Controller to create a polling unit result
 export const createPollingUnitResult = async (req, res) => {
   try {
-    const newResult = new PollingUnitResult(req.body);
-    const savedResult = await newResult.save();
+    const imageUrl = req.body.imageUrl;
+    const newResult = new PollingUnitResult({ imageUrl });
+    const savedResult = await newResult.save({
+      validateBeforeSave: false
+    });
     res.status(201).json(savedResult);
   } catch (error) {
-    // console.error('Error creating polling unit result:', error);
+    console.log(error)
     const cleanedError = errorHandler(error);
-    res.status(400).json({ "status": "error", "message": cleanedError });
+    res.status(400).json({ status: 'error', message: cleanedError });
+  }
+};
+
+export const updatePollingUnitResult = async (req, res) => {
+  try {
+    const processedData = processPollingUnitResultInput(req.body);
+    
+    const updatedResult = await PollingUnitResult.findByIdAndUpdate(
+      req.params.id, 
+      processedData,
+      {
+        new: true,
+        runValidators: true
+      });
+    if (!updatedResult) {
+      return res.status(404).json({ error: 'Polling Unit Result not found' });
+    }
+    res.status(200).json({ "status": "success", data: updatedResult });
+  } catch (error) {
+    console.error('Error updating polling unit result:', error);
+    res.status(400).json({ error: error.message });
   }
 };
 
@@ -19,7 +99,10 @@ export const getPollingUnitResultById = async (req, res) => {
   try {
     const result = await PollingUnitResult.findById(req.params.id);
     if (!result) {
-      return res.status(404).json({ error: 'Polling Unit Result not found' });
+      return res.status(404).json({
+        "status": "error",
+        error: 'Polling Unit Result not found'
+      });
     }
     res.status(200).json(result);
   } catch (error) {
@@ -35,7 +118,7 @@ export const getAllPollingUnitResults = async (req, res) => {
     const results = await PollingUnitResult.find()
       .skip((page - 1) * RESULT_PER_PAGE)
       .limit(RESULT_PER_PAGE);
-      
+
     res.status(200).json({
       totalResults,
       totalPages: Math.ceil(totalResults / RESULT_PER_PAGE),
@@ -49,18 +132,7 @@ export const getAllPollingUnitResults = async (req, res) => {
   }
 };
 
-export const updatePollingUnitResult = async (req, res) => {
-  try {
-    const updatedResult = await PollingUnitResult.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!updatedResult) {
-      return res.status(404).json({ error: 'Polling Unit Result not found' });
-    }
-    res.status(200).json(updatedResult);
-  } catch (error) {
-    console.error('Error updating polling unit result:', error);
-    res.status(400).json({ error: error.message });
-  }
-};
+
 
 export const deletePollingUnitResult = async (req, res) => {
   try {
