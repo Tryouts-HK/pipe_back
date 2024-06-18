@@ -2,12 +2,38 @@ import { lgas } from '../data/lgas.js';
 import { states } from '../data/states.js';
 import PollingUnit from '../models/polling_unit.js';
 
+const RESULT_PER_PAGE = 100;
 
 export const getAllPollingUnits = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || RESULT_PER_PAGE;
+
   try {
-    const stations = await PollingUnit.find();
-    //TODO: to be paginated by 100;
-    res.status(200).json(stations);
+    const skip = (page - 1) * limit;
+
+    // Query database to get polling units with pagination
+    const stations = await PollingUnit.find()
+      .skip(skip)
+      .limit(limit);
+
+    // Count total number of polling units (for pagination info)
+    const totalCount = await PollingUnit.countDocuments();
+
+    // Calculate totalPages
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Prepare pagination metadata
+    const pagination = {
+      currentPage: page,
+      perPage: limit,
+      totalItems: totalCount,
+      totalPages: totalPages
+    };
+
+    res.status(200).json({
+      stations,
+      pagination
+    });
   } catch (error) {
     console.error('Error fetching polling stations:', error);
     res.status(500).json({ error: 'Internal Server Error' });
