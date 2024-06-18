@@ -1,30 +1,44 @@
 import { Schema, model } from 'mongoose';
 
+// Custom validator function for enum values
+const validateEnum = (value) => {
+  const enums = ['Low', 'Medium', 'High']; // Replace with your enum values
+  return enums.includes(value);
+};
+
 const complaintSchema = new Schema({
   text_content: {
     type: String,
-    required: [true, 'Text content is required'] // Custom error message for required field
+    required: [true, 'Text content is required']
   },
   polling_unit_code: {
     type: String,
-    required: [true, 'Polling unit code is required'] // Custom error message for required field
+    required: [true, 'Polling unit code is required']
   },
   impact_level: {
     type: String,
-    enum: ['Low', 'Medium', 'High'],
-    required: [true, 'Impact level is required'], // Custom error message for required field
+    enum: {
+      values: ['Low', 'Medium', 'High'],
+      message: 'Invalid impact level. Acceptable Values: Low ||Medium || High',
+    },
+    required: [true, 'Impact level is required'],
+    // validate: [validateEnum, 'Invalid impact level']
   },
   urgency: {
     type: String,
-    enum: ['Minor', 'Normal', 'Immediate'],
-    required: [true, 'Urgency is required'] // Custom error message for required field
+    enum: {
+      values: ['Minor', 'Normal', 'Immediate'],
+      message: 'Invalid urgency. Acceptable Values: Minor || Normal || Immediate'
+    },
+    required: [true, 'Urgency is required'],
+    // validate: [validateEnum, 'Invalid urgency']
   },
   video_evidence: {
     type: [
       {
         url: {
           type: String,
-          // required: [true, 'Video evidence URL is required'] // Custom error message for required field
+          // No specific validation for URL in this example
         },
         description: {
           type: String
@@ -38,7 +52,7 @@ const complaintSchema = new Schema({
       {
         url: {
           type: String,
-          // required: [true, 'Audio evidence URL is required'] // Custom error message for required field
+          // No specific validation for URL in this example
         },
         description: {
           type: String
@@ -52,7 +66,7 @@ const complaintSchema = new Schema({
       {
         url: {
           type: String,
-          // required: [true, 'Picture evidence URL is required'] // Custom error message for required field
+          // No specific validation for URL in this example
         },
         description: {
           type: String
