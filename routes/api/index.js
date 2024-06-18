@@ -1,4 +1,5 @@
 import { Router } from "express";
+import pollingUnitRoutes from "./polling_unit_route.js"
 
 const router = Router();
 
@@ -7,7 +8,7 @@ const router = Router();
 
 
 // route them here;
-// router.use()
+router.use('/polling_units', pollingUnitRoutes);
 
 
 

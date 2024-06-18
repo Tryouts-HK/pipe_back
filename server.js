@@ -84,10 +84,10 @@ import authRoutes from './routes/auth_routes.js';
 import apiRoutes from './routes/api_index.js';
 
 // Authentication Routes
-app.use(`/${process.env.API_BASE_URL}/auth/`, authRoutes);
+app.use(`${process.env.API_BASE_URL}/auth/`, authRoutes);
 
 // Other Api routes
-app.use(`/${process.env.API_BASE_URL}/`, apiRoutes);
+app.use(`${process.env.API_BASE_URL}/`, apiRoutes);
 
 app.get('/', (req, res)=> {
     res.send("inshallah brother");
@@ -96,5 +96,6 @@ app.get('/', (req, res)=> {
 
 // route for page not found
 app.get('*', (req, res) => {
-    res.status(400).json('404! Page not found')
+    console.log(req.url)
+    res.status(400).json('404! 6Page not found')
 })

@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-const pollingUnitSchema = new Schema({
+const complaintSchema = new Schema({
   name: { type: String, required: true },
   location: { type: Object },
   delimitation: { type: String },
@@ -9,6 +9,6 @@ const pollingUnitSchema = new Schema({
   state_name: { type: String },
 });
 
-const PollingUnit = model('polling_units', pollingUnitSchema);
+const Complaint = model('PollingUnit', complaintSchema);
 
-export default PollingUnit;
+export default Complaint;
