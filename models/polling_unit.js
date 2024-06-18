@@ -9,6 +9,6 @@ const pollingUnitSchema = new Schema({
   state_name: { type: String },
 });
 
-const PollingUnit = model('polling_units', pollingUnitSchema);
+const PollingUnit = model('Polling_Units', pollingUnitSchema);
 
 export default PollingUnit;
