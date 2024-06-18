@@ -22,11 +22,8 @@ const processPollingUnitResultInput = (data) => {
     tampered,
     stamped,
     tagged,
-    // imageUrl
   } = data;
 
-  // console.log('printing valid votes');
-  // console.log(validVotes);
 
   // Ensure validVotes is parsed correctly
   let parsedValidVotes;
@@ -54,7 +51,6 @@ const processPollingUnitResultInput = (data) => {
     tampered: tampered === 'true',
     stamped: stamped === 'true',
     tagged: tagged === 'true',
-    // imageUrl
   };
 };
 
@@ -95,6 +91,23 @@ export const updatePollingUnitResult = async (req, res) => {
   }
 };
 
+export const getAnUntaggedResult = async (req, res) => {
+  try {
+    // Find the first polling unit result that is untagged
+    const untaggedResult = await PollingUnitResult.findOne({ tagged: false });
+
+    if (!untaggedResult) {
+      return res.status(404).json({ status: 'error', message: 'No untagged result found' });
+    }
+
+    // Return the untagged result
+    res.status(200).json({ status: 'success', data: untaggedResult });
+  } catch (error) {
+    const cleanedError = errorHandler(error);
+    res.status(400).json({ status: 'error', message: cleanedError });
+  }
+};
+
 export const getPollingUnitResultById = async (req, res) => {
   try {
     const result = await PollingUnitResult.findById(req.params.id);
@@ -131,8 +144,6 @@ export const getAllPollingUnitResults = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
 
 export const deletePollingUnitResult = async (req, res) => {
   try {

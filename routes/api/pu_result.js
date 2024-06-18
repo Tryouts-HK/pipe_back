@@ -5,7 +5,8 @@ import {
   getPollingUnitResultById,
   getAllPollingUnitResults,
   updatePollingUnitResult,
-  deletePollingUnitResult
+  deletePollingUnitResult,
+  getAnUntaggedResult
 } from '../../controllers/pu_result.js';
 
 const router = express.Router();
@@ -16,6 +17,8 @@ router.post('/', createPollingUnitResult);
 
 // Route to get all polling unit results with pagination
 router.get('/', getAllPollingUnitResults);
+
+router.get('/untagged', getAnUntaggedResult);
 
 // Route to get a polling unit result by ID
 router.get('/:id', getPollingUnitResultById);
