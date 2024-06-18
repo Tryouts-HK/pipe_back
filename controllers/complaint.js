@@ -1,6 +1,7 @@
 import Complaint from '../models/complaint.js';
 import multer from 'multer';
 import path from 'path';
+import errorHandler from '../utils/error_handler.js';
 
 
 // Multer storage configuration
@@ -54,10 +55,19 @@ export const createComplaint = async (req, res) => {
     // Save the complaint to the database
     await newComplaint.save();
 
-    res.status(201).json(newComplaint);
+    res.status(201).json({
+      "status": "success",
+      "data":      newComplaint
+    });
   } catch (error) {
-    console.error('Error creating complaint:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+
+   const cleanedError = errorHandler(error);
+    // console.error('Error creating complaint:', error);
+    res.status(400).json({
+      "status": "error",
+      "message": cleanedError,
+    })
+    // res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
