@@ -99,3 +99,15 @@ app.get('*', (req, res) => {
     console.log(req.url)
     res.status(400).json('404! 6Page not found')
 })
+
+// Global error handler
+app.use((err, req, res, next) => {
+    err.status = err.status || "fail";
+    err.statusCode = err.statusCode || 500;
+
+    res.status(err.statusCode).json({
+        status: err.status,
+        message: transformMessage(err.message),
+        stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+    });
+});
