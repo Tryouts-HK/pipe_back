@@ -1,11 +1,13 @@
 export const LIST_OF_MONTHS = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 export const LIST_OF_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
 
-export const ROLES = {
-    USER: '485932', //default role
-    TEAM_MEMBER: '716450', // canView and update tasks, leave comments, share files, and collaborate with other team members.
-    PROJECT_MANAGER: '209743', //can create new projects, assign tasks to team members, set deadlines, track progress, and generate reports.
-    ADMIN: '562891' //everything + create and delete projects
+export const ROLE_ENCODER = {
+    ADMIN: 2001,
+    VOLUNTEER: 1697,
+    USER: 1984,
 }
-
-// need a role
+export const ROLE_CODE_DECODER = {
+    1984: "user",
+    1697: "volunteer",
+    2001: "admin",
+}
