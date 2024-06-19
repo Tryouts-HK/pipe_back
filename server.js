@@ -19,6 +19,8 @@ import dbConnection from './db/connect_to_db.js';
 
 const PORT = process.env.PORT || 4000;
 
+// fix cors issues
+app.use(cors());
 
 (async () => {
     try {
@@ -46,8 +48,7 @@ const limiter = rateLimit({
     }
 })
 
-// fix cors issues
-app.use(cors());
+
 
 app.use(helmet());
 // Apply the rate limiting middleware to ohly Api route
