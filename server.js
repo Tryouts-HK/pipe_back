@@ -20,7 +20,14 @@ import dbConnection from './db/connect_to_db.js';
 const PORT = process.env.PORT || 4000;
 
 // fix cors issues
-app.use(cors());
+app.use(
+    cors({
+        origin: ["http://localhost:5173", "https://awesome-page-capable-driving-production.pipeops.app/"],
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        credentials: true, // allow session cookie from browser to pass through
+
+    })
+);
 
 (async () => {
     try {
