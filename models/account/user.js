@@ -1,105 +1,139 @@
-// model for user.js
-
-import { Schema, model } from 'mongoose';
+import { Schema, model } from "mongoose";
+import bcrypt from "bcrypt";
 import Auth from '../auth/auth.js';
-import bcrypt from 'bcrypt';
-import pkg from 'validator';
-const { isEmail } = pkg;
+import { createToken, verifyToken } from '../../utils/token.js';
 
-
-// User Model
 const userSchema = new Schema({
-  
+    firstName: {
+        type: String,
+    },
+    lastName: {
+        type: String,
+    },
+    sex: {
+        type: String,
+        enum: {
+            values: ["male", "female"],
+            message: "{VALUES} isn't allowed",
+        }
+    },
     email: {
         type: String,
         required: true,
-        unique: true,
-        lowercase: true,
-        validate: [isEmail, "Please provide a valid email address"]
+        unique: true
+    },
+    prefix: {
+        type: String,
+
+    },
+    suffix: {
+        type: String,
+
     },
     role: {
-        type: String,
-        required: true,
-        enum: ['485932', '716450', '209743', '562891'],
-        default: "485932", //normal user
-        // default: "716450", //member
-        // default: "209743", //lead
-        // default: "562891"  //admin
-
+        type: Number,
+        default: 1984,
+        required: true
     },
-    verified: {
+    authType: {
+        type: String,
+        enum: ['PASSWORD', 'FACEBOOK_OAUTH', 'GOOGLE_OAUTH'],
+        default: 'PASSWORD',
+        select: false
+    },
+    googleId: {
+        type: String,
+    },
+    avatar: {
+        type: String,
+    },
+    isVerified: {
         type: Boolean,
         default: false,
-        select: false,
-    },
-    organization: {
-        type: Schema.Types.ObjectId,
-        ref: 'Organization'
-    },
-    team: {
-        type: [Schema.Types.ObjectId],
-        ref: 'Team',
-        select: false,
-        default: undefined
-    },
-    active: {
-        type: Boolean,
-        default: true,
-        select: false,
-    },
-}, { timestamps: true });
-
-userSchema.pre(/^find/, function (next) {
-    this.find({ active: { $ne: false } });
-    next();
-});
-
-userSchema.statics.CreateAccount = async function (email, password) {
-    console.log(email, password)
-    try {
-        const newUser = await this.create({ email });
-        const createdPassword = await Auth.create({ who: newUser._id, secret: password });
-        return newUser;
-    } catch (error) {
-        throw error;
     }
-}
+
+}, { timestamps: true, });
 
 userSchema.statics.Login = async function (email, password) {
     try {
-        const foundUser = await this.findOne({ email });
-        const secretPlace = await Auth.findOne({ who: foundUser._id });
-        console.log("to be compared", password, secretPlace)
-        const isValid = await bcrypt.compare(password, secretPlace.secret);
-        if (isValid) {
-            return foundUser;
+        const isAvailable = await this.findOne({ email })
+        if (isAvailable && !isAvailable.googleId) {
+            const result = await Auth.findOne({ who: isAvailable._id });
+            if (result) {
+                const isAuthn = await bcrypt.compare(password, result.secret);
+                if (isAuthn) {
+                    return isAvailable;
+                } else {
+                    throw Error("Incorrect Login Details");
+                }
+            }
+            throw Error("Incorrect Login Details");
+        } else {
+            throw Error("Incorrect Login Details");
         }
-        throw new Error('Incorrect Password');
     } catch (error) {
         throw error;
     }
 }
 
-userSchema.statics.isOrganizationEmployee = async function (userId, organizationId) {
+userSchema.statics.RecoverPassword = async function (email) {
     try {
-        const userOrganization = await this.findById(userId, organization);
-        if (organizationId == userOrganization) {
-            return true
+        console.log(email)
+        const isAvailable = await this.findOne({ email }).select('+authType');
+        console.log(isAvailable);
+        if (isAvailable != null) {
+            console.log(isAvailable.authType)
+            if (isAvailable.authType != "PASSWORD") {
+                throw Error('No password required');
+            } else {
+                const passwordHash = await Auth.findOne({ who: isAvailable._id });
+                const resetId = createToken(isAvailable, passwordHash.secret);
+                const resetLink = `http://${process.env.HOST}:${process.env.PORT}/api/v1/auth/reset/password/${resetId}`;
+                console.log(resetLink);
+                return resetLink
+            }
         }
-        return false
     } catch (error) {
-        throw error;
+        throw error
     }
 }
 
-userSchema.statics.getUserTeams = async function (userId) {
+userSchema.statics.ResetPassword = async function (id, oldPassword, newPassword) {
     try {
-        const userTeams = await this.findById(userId, team);
+        const updatedUser = await Auth.findOne({ who: id });
+        console.log('compare', updatedUser.secret, oldPassword)
+        if (updatedUser.secret == oldPassword) {
+            updatedUser.secret = newPassword;
+            const result = await updatedUser.save();
+            console.log('success', result)
+            return "updated"
+        }
+        throw Error('Password was changed recently')
+    } catch (error) {
+        throw error
+    }
+}
+
+userSchema.statics.UpdateProfileDetails = async function (id, updates) {
+    try {
+        const user = await this.findById(id);
+        if (!user) {
+            throw new Error('Doctor not found');
+        }
+        // Update the doctor's profile details based on the updates
+        for (const key in updates) {
+            user[key] = updates[key];
+        }
+
+        // Save the updated doctor document
+        const updatedDoctor = await user.save();
+
+        return updatedDoctor;
+
     } catch (error) {
         throw error;
     }
 }
 
 const User = model('User', userSchema);
-
 export default User;
