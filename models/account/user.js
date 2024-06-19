@@ -5,15 +5,11 @@ import Auth from '../auth/auth.js';
 import bcrypt from 'bcrypt';
 import pkg from 'validator';
 const { isEmail } = pkg;
-import { randomUUID } from 'crypto';
 
 
 // User Model
 const userSchema = new Schema({
-    _id: {
-        type: Schema.Types.UUID,
-        default: () => randomUUID()
-    },
+  
     email: {
         type: String,
         required: true,
@@ -37,7 +33,7 @@ const userSchema = new Schema({
         select: false,
     },
     organization: {
-        type: Schema.Types.UUID,
+        type: Schema.Types.ObjectId,
         ref: 'Organization'
     },
     team: {
