@@ -1,4 +1,5 @@
 import { Strategy as localStrategy } from 'passport-local';
+import PassportJWT from 'passport-jwt';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -39,6 +40,23 @@ const passportConfig = (passport) => {
                     console.log(error)
                     next(error, null);
                 }
+            }
+        )
+    );
+
+    const opts = {
+        jwtFromRequest: PassportJWT.ExtractJwt.fromAuthHeaderAsBearerToken(),
+        secretOrKey: process.env.JWT_SECRET,
+        issuer: 'accounts.examplesoft.com',
+        audience: 'yoursite.net',
+    }
+
+    // Configure JWT Strategy
+    passport.use(
+        new PassportJWT.Strategy(
+            opts,
+            (payload, done) => {
+
             }
         )
     );

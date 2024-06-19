@@ -115,6 +115,10 @@ export const local_scope = (req, res, next) => {
     passport.authenticate('local')(req, res, next);
 };
 
+export const jwt_scope =(req, res, next) => {
+    passport.authenticate('jwt', {session: false})(req, res, next);
+};
+
 export const google_scope = (req, res, next) => {
     passport.authenticate('google', {
         scope: ['profile', 'email'],
