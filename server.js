@@ -8,6 +8,8 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import ExpressMongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
+import cors from 'cors'
+
 
 import dotenv from 'dotenv'
 dotenv.config();
@@ -43,6 +45,9 @@ const limiter = rateLimit({
         "message": "You have exceeded the allowed rate limit for this endpoint. Please try again in an hour."
     }
 })
+
+// fix cors issues
+app.use(cors());
 
 app.use(helmet());
 // Apply the rate limiting middleware to ohly Api route
