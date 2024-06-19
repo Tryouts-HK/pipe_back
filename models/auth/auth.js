@@ -1,39 +1,48 @@
-// model for authn
-
 import { Schema, model } from "mongoose";
-import { genSalt, hash } from 'bcrypt';
-import { randomUUID } from 'crypto';
-
+import bcrypt from 'bcrypt';
 
 const authSchema = new Schema({
-     _id: {
-        type: Schema.Types.UUID,
-        default: () => randomUUID(),
-    },
     who: {
-        type: Schema.Types.UUID,
-        ref: 'User',
+        type: Schema.Types.ObjectId,
+        ref: function () {
+            return this.whoType;
+        },
         required: true,
         unique: true
     },
+    whoType: {
+        type: String,
+        enum: ['Doctor', 'User', 'Pharmacist'],
+        default: 'User', // Set a default account type
+    },
+    authType: {
+        type: String,
+        enum: ['PASSWORD', 'FACEBOOK_OAUTH', 'GOOGLE_OAUTH'],
+        default: 'PASSWORD'
+    },
+    acessToken: {
+
+    },
+    refreshToken: {
+        type: String
+    },
     secret: {
         type: String,
-        minlength: [8, "Password length is too short"],
-        required: [true, "Please provide a password"]
+        required: true,
     }
-}, { timestamps: true });
 
+}, { timestamps: true });
 
 authSchema.pre('save', async function (next) {
     try {
-        const salt = await genSalt();
-        this.secret = await hash(this.secret, salt);
+        const salt = await bcrypt.genSalt();
+        this.secret = await bcrypt.hash(this.secret, salt);
         next();
     } catch (error) {
-        throw error;
+        console.log(error);
+        throw error('Something Wrong Happened');
     }
-});
+})
 
-
-const Auth = model('Auth', authSchema);
-export default Auth;
+const Auth = model('auth', authSchema);
+export default Auth

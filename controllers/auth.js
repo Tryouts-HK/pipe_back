@@ -3,12 +3,7 @@ import Auth from "../models/auth/auth.js";
 import { verifyToken } from "../utils/token.js";
 import { switchProfile } from "../utils/switch_handler.js";
 import errorHandler from '../utils/error_handler.js';
-// import { ROLE_ENCODER } from '../utils/constant.js';
-
-
-export const register_get = (req, res) => {
-    res.status(200).render("auth/register");
-}
+import { ROLE_CODE_DECODER, ROLE_ENCODER } from '../utils/constant.js';
 
 export const register_post = async (req, res, next) => {
     if (req.body.password && req.body.password.length >= 8) {
@@ -165,7 +160,6 @@ export const smart_redirect_google = (req, res) => {
 };
 
 export default {
-    register_get,
     register_post,
     choose_account_type,
     log_in_get,
