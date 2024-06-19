@@ -23,9 +23,11 @@ const PORT = process.env.PORT || 4000;
 app.use(
     cors({
         origin: [
-            "http://localhost:5173", 
+            "http://localhost:5173",
             "https://awesome-page-capable-driving-production.pipeops.app/",
-            "https://redundant-desk-hellish-government-production.pipeops.app/"
+            "https://redundant-desk-hellish-government-production.pipeops.app/",
+            "https://awesome-page-capable-driving-production.pipeops.app",
+            "https://redundant-desk-hellish-government-production.pipeops.app"
         ],
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true, // allow session cookie from browser to pass through
