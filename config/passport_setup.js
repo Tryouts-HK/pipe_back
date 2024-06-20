@@ -52,14 +52,14 @@ const passportConfig = (passport) => {
     }
 
     // Configure JWT Strategy
-    passport.use(
-        new PassportJWT.Strategy(
-            opts,
-            (payload, done) => {
+    // passport.use(
+    //     new PassportJWT.Strategy(
+    //         opts,
+    //         (payload, done) => {
 
-            }
-        )
-    );
+    //         }
+    //     )
+    // );
 }
 
 export default passportConfig;
