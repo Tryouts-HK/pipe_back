@@ -7,7 +7,7 @@ import {
   updatePollingUnitResult,
   deletePollingUnitResult,
   getAnUntaggedResult
-} from '../../controllers/pu_result.js';
+} from '../../controllers/result.js';
 
 const router = express.Router();
 
