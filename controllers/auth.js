@@ -4,6 +4,8 @@ import { createToken, verifyToken } from "../utils/token.js";
 import { switchProfile } from "../utils/switch_handler.js";
 import errorHandler from "../utils/error_handler.js";
 import { ROLE_CODE_DECODER, ROLE_ENCODER } from "../utils/constant.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 export const register_post = async (req, res, next) => {
   if (req.body.password && req.body.password.length >= 8) {
@@ -197,9 +199,7 @@ export const smart_redirect = (req, res) => {
 };
 
 export const smart_redirect_google = (req, res) => {
-  const url =
-    req.session.returnTo ||
-    "https://hudibia-frontend-test.onrender.com/dashboard";
+  const url = req.session.returnTo || process.env.DEFAULT_AUTH_USER_ROUTE; //
   // res.redirect(url);
   res.json({ redirect: url, data: req.user });
 };
