@@ -22,7 +22,8 @@ import {
     sign_in_with_facebook,
     smart_redirect,
     // choose_account_type,
-    smart_redirect_google } from '../controllers/auth.js';
+    smart_redirect_google, 
+    jwt_scope} from '../controllers/auth.js';
 import reqErrorHandler from '../middlewares/req_error_handler.js';
 import { ensureLoggedIn, ensureLoggedOut } from '../middlewares/authenticate.js';
 
@@ -71,6 +72,7 @@ Router.post('/apple/callback', sign_in_with_apple,
 //Logout Obviously
 Router.route('/logout')
     .post(
+        jwt_scope,
         ensureLoggedIn(),
         log_out);
 

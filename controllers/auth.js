@@ -1,6 +1,6 @@
 import passport from "passport";
 import Auth from "../models/auth/auth.js";
-import { verifyToken } from "../utils/token.js";
+import { createToken, verifyToken } from "../utils/token.js";
 import { switchProfile } from "../utils/switch_handler.js";
 import errorHandler from "../utils/error_handler.js";
 import { ROLE_CODE_DECODER, ROLE_ENCODER } from "../utils/constant.js";
@@ -27,13 +27,13 @@ export const register_post = async (req, res, next) => {
           return next(err);
         }
       });
-      res
-        .status(201)
-        .json({
-          status: "success",
-          message: "Account Created successfully!",
-          data: result,
-        });
+      const accessToken = createToken(result);
+      res.status(201).json({
+        status: "success",
+        message: "Account Created successfully!",
+        data: result,
+        accessToken: accessToken,
+      });
     } catch (error) {
       console.log(error);
       const cleanedError = errorHandler(error);
@@ -127,11 +127,30 @@ export const reset_password_post = async (req, res) => {
 };
 
 export const local_scope = (req, res, next) => {
-  passport.authenticate("local")(req, res, next);
+  passport.authenticate("local", { session: false })(req, res, next);
 };
 
 export const jwt_scope = (req, res, next) => {
-  passport.authenticate("jwt", { session: false })(req, res, next);
+  passport.authenticate("jwt", { session: false }, (err, user, info) => {
+    // If there's an error during authentication, pass it to the next middleware.
+    console.log("got in here interestingly");
+    if (err) {
+      return next(err);
+    }
+
+    // If the user is not authenticated, send an unauthorized response.
+    if (!user) {
+      return res
+        .status(401)
+        .json({ status: "error", message: "Unauthorized: invalid token" });
+    }
+
+    // If the user is authenticated, attach the user object to the request object.
+    req.user = user;
+
+    // Proceed to the next middleware or route handler.
+    next();
+  })(req, res, next);
 };
 
 export const google_scope = (req, res, next) => {
@@ -173,7 +192,8 @@ export const smart_redirect = (req, res) => {
       req.user.email
     }`
   );
-  res.json({ redirect: url, data: req.user });
+  const accessToken = createToken(req.user);
+  res.json({ redirect: url, data: req.user, accessToken: accessToken });
 };
 
 export const smart_redirect_google = (req, res) => {

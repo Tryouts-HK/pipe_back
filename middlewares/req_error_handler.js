@@ -1,6 +1,6 @@
 import errorHandler from "../utils/error_handler.js";
 
-const reqErrorHandler = async (err, req, res, next) => {
+export const reqErrorHandler = async (err, req, res, next) => {
   console.log("error middleware");
   console.log(err);
   if (err) {

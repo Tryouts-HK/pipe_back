@@ -4,21 +4,21 @@ import { switchProfile } from "../utils/switch_handler.js";
 
 export const getProfileDetails = async (req, res) => {
   try {
-    //
-
     const user = req.user;
     const retrieveUserDetails = await switchProfile(
       ROLE_CODE_DECODER[user.role]
-    ).findById(user._id);
-
+    ).findById(user.id);
+    console.log("printing retrieved user");
+    console.log(retrieveUserDetails);
     if (!retrieveUserDetails) {
       // throw Error("there's errorr retrieving user details.");
       res.status(400).json({
         status: "error",
         message: "there's errorr retrieving user details.",
       });
+    } else {
+      res.status(200).json({ message: "success", data: retrieveUserDetails });
     }
-    res.status(200).json({ message: "success", data: retrieveUserDetails });
   } catch (error) {
     console.error(error);
     const cleanedError = errorHandler(error);
@@ -33,7 +33,7 @@ export const updateProfile = async (req, res) => {
   console.log(updates);
   try {
     const allowedUpdates = {};
-    const userId = req.user._id;
+    const userId = req.user.id;
 
     for (const field of [
       "firstName",

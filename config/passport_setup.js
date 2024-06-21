@@ -46,14 +46,17 @@ const passportConfig = (passport) => {
   const opts = {
     jwtFromRequest: PassportJWT.ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.JWT_SECRET,
-    issuer: "accounts.examplesoft.com",
-    audience: "yoursite.net",
   };
 
   // Configure JWT Strategy
   passport.use(
-    new PassportJWT.Strategy(opts, (payload, done) => {
-      //
+    new PassportJWT.Strategy(opts, (payload, next) => {
+      try {
+        next(null, payload);
+      } catch (error) {
+        console.log(error);
+        next(error, null);
+      }
     })
   );
 };
