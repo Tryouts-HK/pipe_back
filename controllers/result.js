@@ -21,7 +21,9 @@ const processPollingUnitResultInput = (data) => {
     totalUsedBallotPapers,
     tampered,
     stamped,
-    tagged,
+    duplicate,
+    // tagged,
+    // delimeter,
   } = data;
 
   // Ensure validVotes is parsed correctly
@@ -50,6 +52,8 @@ const processPollingUnitResultInput = (data) => {
     tampered: tampered === "true",
     stamped: stamped === "true",
     tagged: true,
+    delimeter: `${stateCode.slice(1)}/${lgaCode}/${wardCode}/${puCode}`,
+    duplicate,
   };
 };
 
