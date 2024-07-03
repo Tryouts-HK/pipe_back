@@ -1,6 +1,6 @@
-import { lgas } from '../data/lgas.js';
-import { states } from '../data/states.js';
-import PollingUnit from '../models/polling_unit.js';
+import { lgas } from "../data/lgas.js";
+import { states } from "../data/states.js";
+import PollingUnit from "../models/polling_unit.js";
 
 const RESULT_PER_PAGE = 100;
 
@@ -13,6 +13,7 @@ export const getAllPollingUnits = async (req, res) => {
 
     // Query database to get polling units with pagination
     const stations = await PollingUnit.find()
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
@@ -27,18 +28,18 @@ export const getAllPollingUnits = async (req, res) => {
       currentPage: page,
       perPage: limit,
       totalItems: totalCount,
-      totalPages: totalPages
+      totalPages: totalPages,
     };
 
     res.status(200).json({
       stations,
-      pagination
+      pagination,
     });
   } catch (error) {
-    console.error('Error fetching polling stations:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error fetching polling stations:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-}
+};
 
 export const getPollingUnitById = async (req, res) => {
   try {
@@ -47,7 +48,7 @@ export const getPollingUnitById = async (req, res) => {
     let lgaCode;
     let wardCode;
     let puCode;
-   let reformattedStateCode ;
+    let reformattedStateCode;
     console.log(passedCode.length);
     switch (passedCode.length) {
       case 3:
@@ -56,8 +57,8 @@ export const getPollingUnitById = async (req, res) => {
         const foundState = states[stateCode];
         if (!foundState) throw Error("state not found");
         res.status(200).json({
-          "status": "success",
-          "state": foundState,
+          status: "success",
+          state: foundState,
         });
         break;
       case 5:
@@ -75,22 +76,22 @@ export const getPollingUnitById = async (req, res) => {
           // console.log("Adjusted lgaCode:", lgaCode);
         }
         function findLGA(stateCode, lgaCode) {
-          return lgas.find(lga => lga.state_id === stateCode && lga.abbreviation === lgaCode);
+          return lgas.find(
+            (lga) => lga.state_id === stateCode && lga.abbreviation === lgaCode
+          );
         }
         const foundLga = findLGA(stateCode, lgaCode);
 
         if (foundLga) {
           // console.log('LGA found:', foundLga);
           res.status(200).json({
-            "status": "success",
-            "state": foundLga.state_name,
-            "lga": foundLga.name,
+            status: "success",
+            state: foundLga.state_name,
+            lga: foundLga.name,
           });
-
         } else {
           throw Error("No LGA found with the given stateCode and lgaCode.");
         }
-
 
         break;
 
@@ -101,22 +102,22 @@ export const getPollingUnitById = async (req, res) => {
         wardCode = passedCode.substring(5, 7);
         //
         reformattedStateCode = stateCode.substring(1, 3);
-        console.log('reformattedStateCode');
-         const wardIdentifier = `${reformattedStateCode}/${lgaCode}/${wardCode}/001`;
-        console.log(wardIdentifier );
+        console.log("reformattedStateCode");
+        const wardIdentifier = `${reformattedStateCode}/${lgaCode}/${wardCode}/001`;
+        console.log(wardIdentifier);
 
         const foundWard = await PollingUnit.findOne({
           delimitation: wardIdentifier,
         });
-        if(foundWard){
+        if (foundWard) {
           res.status(200).json({
-            "status": "success",
-            "state": foundWard.state_name,
-            "lga": foundWard.local_government_name,
-            "ward_name": foundWard.ward_name,
+            status: "success",
+            state: foundWard.state_name,
+            lga: foundWard.local_government_name,
+            ward_name: foundWard.ward_name,
           });
-        }else{
-          throw Error("ward with code wasn't found")
+        } else {
+          throw Error("ward with code wasn't found");
         }
         break;
 
@@ -128,37 +129,39 @@ export const getPollingUnitById = async (req, res) => {
         puCode = passedCode.substring(7, 10);
 
         reformattedStateCode = stateCode.substring(1, 3);
-        console.log('reformattedStateCode');
+        console.log("reformattedStateCode");
         const puIdentifier = `${reformattedStateCode}/${lgaCode}/${wardCode}/${puCode}`;
         console.log(puIdentifier);
 
         const foundPu = await PollingUnit.findOne({
           delimitation: puIdentifier,
         });
-        if(foundPu){
+        if (foundPu) {
           res.status(200).json({
-            "status": "success",
-            "state": foundPu.state_name,
-            "lga": foundPu.local_government_name,
-            "ward_name": foundPu.ward_name,
-            "pu_name": foundPu.name,
+            status: "success",
+            state: foundPu.state_name,
+            lga: foundPu.local_government_name,
+            ward_name: foundPu.ward_name,
+            pu_name: foundPu.name,
           });
-        }else{
-          throw Error("pu with code wasn't found")
+        } else {
+          throw Error("pu with code wasn't found");
         }
         break;
       default:
-        res.status(400).json({ error: "Identifier doesn't match accepted formats: 3,5,7, 10 digits interval" });
+        res.status(400).json({
+          error:
+            "Identifier doesn't match accepted formats: 3,5,7, 10 digits interval",
+        });
         return;
     }
-
-
   } catch (error) {
     // check if error is user
-    console.error('Error fetching polling unit data:', error);
-    res.status(400).json({ error: `Error fetching polling unit data: ${error.message}` });
+    console.error("Error fetching polling unit data:", error);
+    res
+      .status(400)
+      .json({ error: `Error fetching polling unit data: ${error.message}` });
     // else;
-
   }
 };
 
@@ -169,22 +172,24 @@ export const addPollingUnit = async (req, res) => {
     const savedStation = await newStation.save();
     res.status(201).json(savedStation);
   } catch (error) {
-    console.error('Error creating polling station:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error creating polling station:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 // admin function;
 export const updatePollingUnit = async (req, res) => {
   try {
-    const updatedStation = await findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updatedStation = await findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     if (!updatedStation) {
-      return res.status(404).json({ error: 'Polling Station not found' });
+      return res.status(404).json({ error: "Polling Station not found" });
     }
     res.status(200).json(updatedStation);
   } catch (error) {
-    console.error('Error updating polling station:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error updating polling station:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -193,13 +198,11 @@ export const deletePollingUnit = async (req, res) => {
   try {
     const deletedStation = await findByIdAndDelete(req.params.id);
     if (!deletedStation) {
-      return res.status(404).json({ error: 'Polling Station not found' });
+      return res.status(404).json({ error: "Polling Station not found" });
     }
-    res.status(200).json({ message: 'Polling Station deleted successfully' });
+    res.status(200).json({ message: "Polling Station deleted successfully" });
   } catch (error) {
-    console.error('Error deleting polling station:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error deleting polling station:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-

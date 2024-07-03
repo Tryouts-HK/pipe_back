@@ -204,3 +204,251 @@ export const deletePollingUnitResult = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+export const getAllPollingUnitResultsByStates = async (req, res) => {
+  try {
+    const result = await PollingUnitResult.aggregate([
+      {
+        $match: { tagged: true },
+      },
+      // Group by stateCode
+      {
+        $group: {
+          _id: "$stateCode",
+          totalVotes: { $sum: "$totalValidVotes" },
+          totalAccreditedVoters: { $sum: "$accreditedVoters" },
+          totalSpoiledBallotPapers: { $sum: "$spoiledBallotPapers" },
+          totalRejectedBallots: { $sum: "$rejectedBallots" },
+          totalUnusedBallotPapers: { $sum: "$unusedBallotPapers" },
+          // Sum the votes for each political party
+          validVotes_A: { $sum: "$validVotes.A" },
+          validVotes_AA: { $sum: "$validVotes.AA" },
+          validVotes_AAX: { $sum: "$validVotes.AAX" },
+          validVotes_ADC: { $sum: "$validVotes.ADC" },
+          validVotes_ADP: { $sum: "$validVotes.ADP" },
+          validVotes_APC: { $sum: "$validVotes.APC" },
+          validVotes_APGA: { $sum: "$validVotes.APGA" },
+          validVotes_APM: { $sum: "$validVotes.APM" },
+          validVotes_APP: { $sum: "$validVotes.APP" },
+          validVotes_BP: { $sum: "$validVotes.BP" },
+          validVotes_LP: { $sum: "$validVotes.LP" },
+          validVotes_NNPP: { $sum: "$validVotes.NNPP" },
+          validVotes_NRM: { $sum: "$validVotes.NRM" },
+          validVotes_PDP: { $sum: "$validVotes.PDP" },
+          validVotes_PRP: { $sum: "$validVotes.PRP" },
+          validVotes_SDP: { $sum: "$validVotes.SDP" },
+          validVotes_YPP: { $sum: "$validVotes.YPP" },
+          validVotes_ZLP: { $sum: "$validVotes.ZLP" },
+        },
+      },
+      // Project the fields to include in the output
+      {
+        $project: {
+          _id: 0,
+          stateCode: "$_id",
+          totalVotes: 1,
+          totalAccreditedVoters: 1,
+          totalSpoiledBallotPapers: 1,
+          totalRejectedBallots: 1,
+          totalUnusedBallotPapers: 1,
+          validVotes: {
+            A: "$validVotes_A",
+            AA: "$validVotes_AA",
+            AAX: "$validVotes_AAX",
+            ADC: "$validVotes_ADC",
+            ADP: "$validVotes_ADP",
+            APC: "$validVotes_APC",
+            APGA: "$validVotes_APGA",
+            APM: "$validVotes_APM",
+            APP: "$validVotes_APP",
+            BP: "$validVotes_BP",
+            LP: "$validVotes_LP",
+            NNPP: "$validVotes_NNPP",
+            NRM: "$validVotes_NRM",
+            PDP: "$validVotes_PDP",
+            PRP: "$validVotes_PRP",
+            SDP: "$validVotes_SDP",
+            YPP: "$validVotes_YPP",
+            ZLP: "$validVotes_ZLP",
+          },
+        },
+      },
+    ]);
+
+    res.status(200).json({ message: "successsful", data: result });
+  } catch (error) {
+    console.error("Error fetching total votes by states", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const getAllPollingUnitResultsByLGA = async (req, res) => {
+  try {
+    const stateCode = req.params.stateCode;
+    const result = await PollingUnitResult.aggregate([
+      // include only tagged documents
+      {
+        $match: { tagged: true },
+      },
+      {
+        $match: { stateCode: stateCode },
+      },
+      // Group by stateCode
+      {
+        $group: {
+          _id: "$lgaCode",
+          totalVotes: { $sum: "$totalValidVotes" },
+          totalAccreditedVoters: { $sum: "$accreditedVoters" },
+          totalSpoiledBallotPapers: { $sum: "$spoiledBallotPapers" },
+          totalRejectedBallots: { $sum: "$rejectedBallots" },
+          totalUnusedBallotPapers: { $sum: "$unusedBallotPapers" },
+          // Sum the votes for each political party
+          validVotes_A: { $sum: "$validVotes.A" },
+          validVotes_AA: { $sum: "$validVotes.AA" },
+          validVotes_AAX: { $sum: "$validVotes.AAX" },
+          validVotes_ADC: { $sum: "$validVotes.ADC" },
+          validVotes_ADP: { $sum: "$validVotes.ADP" },
+          validVotes_APC: { $sum: "$validVotes.APC" },
+          validVotes_APGA: { $sum: "$validVotes.APGA" },
+          validVotes_APM: { $sum: "$validVotes.APM" },
+          validVotes_APP: { $sum: "$validVotes.APP" },
+          validVotes_BP: { $sum: "$validVotes.BP" },
+          validVotes_LP: { $sum: "$validVotes.LP" },
+          validVotes_NNPP: { $sum: "$validVotes.NNPP" },
+          validVotes_NRM: { $sum: "$validVotes.NRM" },
+          validVotes_PDP: { $sum: "$validVotes.PDP" },
+          validVotes_PRP: { $sum: "$validVotes.PRP" },
+          validVotes_SDP: { $sum: "$validVotes.SDP" },
+          validVotes_YPP: { $sum: "$validVotes.YPP" },
+          validVotes_ZLP: { $sum: "$validVotes.ZLP" },
+        },
+      },
+      // Project the fields to include in the output
+      {
+        $project: {
+          _id: 0,
+          lgaCode: "$_id",
+          totalVotes: 1,
+          totalAccreditedVoters: 1,
+          totalSpoiledBallotPapers: 1,
+          totalRejectedBallots: 1,
+          totalUnusedBallotPapers: 1,
+          validVotes: {
+            A: "$validVotes_A",
+            AA: "$validVotes_AA",
+            AAX: "$validVotes_AAX",
+            ADC: "$validVotes_ADC",
+            ADP: "$validVotes_ADP",
+            APC: "$validVotes_APC",
+            APGA: "$validVotes_APGA",
+            APM: "$validVotes_APM",
+            APP: "$validVotes_APP",
+            BP: "$validVotes_BP",
+            LP: "$validVotes_LP",
+            NNPP: "$validVotes_NNPP",
+            NRM: "$validVotes_NRM",
+            PDP: "$validVotes_PDP",
+            PRP: "$validVotes_PRP",
+            SDP: "$validVotes_SDP",
+            YPP: "$validVotes_YPP",
+            ZLP: "$validVotes_ZLP",
+          },
+        },
+      },
+    ]);
+
+    res.status(200).json({ message: "successsful", data: result });
+  } catch (error) {
+    console.error("Error fetching total votes by states", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const getAllPollingUnitResultsByWard = async (req, res) => {
+  try {
+    const stateCode = req.params.stateCode;
+    const lgaCode = req.params.lgaCode;
+    const result = await PollingUnitResult.aggregate([
+      // include only tagged documents
+      {
+        $match: { tagged: true },
+      },
+      // group by state code
+      {
+        $match: { stateCode: stateCode },
+      },
+      // group by lga code
+      {
+        $match: { lgaCode: lgaCode },
+      },
+
+      // Group by stateCode
+      {
+        $group: {
+          _id: "$wardCode",
+          totalVotes: { $sum: "$totalValidVotes" },
+          totalAccreditedVoters: { $sum: "$accreditedVoters" },
+          totalSpoiledBallotPapers: { $sum: "$spoiledBallotPapers" },
+          totalRejectedBallots: { $sum: "$rejectedBallots" },
+          totalUnusedBallotPapers: { $sum: "$unusedBallotPapers" },
+          // Sum the votes for each political party
+          validVotes_A: { $sum: "$validVotes.A" },
+          validVotes_AA: { $sum: "$validVotes.AA" },
+          validVotes_AAX: { $sum: "$validVotes.AAX" },
+          validVotes_ADC: { $sum: "$validVotes.ADC" },
+          validVotes_ADP: { $sum: "$validVotes.ADP" },
+          validVotes_APC: { $sum: "$validVotes.APC" },
+          validVotes_APGA: { $sum: "$validVotes.APGA" },
+          validVotes_APM: { $sum: "$validVotes.APM" },
+          validVotes_APP: { $sum: "$validVotes.APP" },
+          validVotes_BP: { $sum: "$validVotes.BP" },
+          validVotes_LP: { $sum: "$validVotes.LP" },
+          validVotes_NNPP: { $sum: "$validVotes.NNPP" },
+          validVotes_NRM: { $sum: "$validVotes.NRM" },
+          validVotes_PDP: { $sum: "$validVotes.PDP" },
+          validVotes_PRP: { $sum: "$validVotes.PRP" },
+          validVotes_SDP: { $sum: "$validVotes.SDP" },
+          validVotes_YPP: { $sum: "$validVotes.YPP" },
+          validVotes_ZLP: { $sum: "$validVotes.ZLP" },
+        },
+      },
+      // Project the fields to include in the output
+      {
+        $project: {
+          _id: 0,
+          wardCode: "$_id",
+          totalVotes: 1,
+          totalAccreditedVoters: 1,
+          totalSpoiledBallotPapers: 1,
+          totalRejectedBallots: 1,
+          totalUnusedBallotPapers: 1,
+          validVotes: {
+            A: "$validVotes_A",
+            AA: "$validVotes_AA",
+            AAX: "$validVotes_AAX",
+            ADC: "$validVotes_ADC",
+            ADP: "$validVotes_ADP",
+            APC: "$validVotes_APC",
+            APGA: "$validVotes_APGA",
+            APM: "$validVotes_APM",
+            APP: "$validVotes_APP",
+            BP: "$validVotes_BP",
+            LP: "$validVotes_LP",
+            NNPP: "$validVotes_NNPP",
+            NRM: "$validVotes_NRM",
+            PDP: "$validVotes_PDP",
+            PRP: "$validVotes_PRP",
+            SDP: "$validVotes_SDP",
+            YPP: "$validVotes_YPP",
+            ZLP: "$validVotes_ZLP",
+          },
+        },
+      },
+    ]);
+
+    res.status(200).json({ message: "successsful", data: result });
+  } catch (error) {
+    console.error("Error fetching total votes by states", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

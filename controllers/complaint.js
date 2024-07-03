@@ -1,17 +1,16 @@
-import Complaint from '../models/complaint.js';
-import multer from 'multer';
-import path from 'path';
-import errorHandler from '../utils/error_handler.js';
-
+import Complaint from "../models/complaint.js";
+import multer from "multer";
+import path from "path";
+import errorHandler from "../utils/error_handler.js";
 
 // Multer storage configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './uploads/'); // Uploads folder where files will be stored
+    cb(null, "./uploads/"); // Uploads folder where files will be stored
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + path.extname(file.originalname)); // File naming scheme
-  }
+  },
 });
 
 // File upload middleware with multer
@@ -21,12 +20,7 @@ const upload = multer({ storage: storage });
 export const createComplaint = async (req, res) => {
   try {
     // Extract fields from request body
-    const {
-      text_content,
-      polling_unit_code,
-      impact_level,
-      urgency
-    } = req.body;
+    const { text_content, polling_unit_code, impact_level, urgency } = req.body;
 
     // Extract filename from uploaded file (if any)
     const file = req.file;
@@ -36,9 +30,9 @@ export const createComplaint = async (req, res) => {
     }
 
     // Extract video, audio, and picture evidence from request body
-    const video_evidence = JSON.parse(req.body.video_evidence || '[]');
-    const audio_evidence = JSON.parse(req.body.audio_evidence || '[]');
-    const picture_evidence = JSON.parse(req.body.picture_evidence || '[]');
+    const video_evidence = JSON.parse(req.body.video_evidence || "[]");
+    const audio_evidence = JSON.parse(req.body.audio_evidence || "[]");
+    const picture_evidence = JSON.parse(req.body.picture_evidence || "[]");
 
     // Create a new complaint object
     const newComplaint = new Complaint({
@@ -49,24 +43,23 @@ export const createComplaint = async (req, res) => {
       video_evidence,
       audio_evidence,
       picture_evidence,
-      fileUrl // Add fileUrl to the complaint object
+      fileUrl, // Add fileUrl to the complaint object
     });
 
     // Save the complaint to the database
     await newComplaint.save();
 
     res.status(201).json({
-      "status": "success",
-      "data":      newComplaint
+      status: "success",
+      data: newComplaint,
     });
   } catch (error) {
-
-   const cleanedError = errorHandler(error);
+    const cleanedError = errorHandler(error);
     // console.error('Error creating complaint:', error);
     res.status(400).json({
-      "status": "error",
-      "message": cleanedError,
-    })
+      status: "error",
+      message: cleanedError,
+    });
     // res.status(500).json({ error: 'Internal Server Error' });
   }
 };
@@ -83,6 +76,7 @@ export const getAllComplaints = async (req, res) => {
 
     // Query database to get polling units with pagination
     const complaints = await Complaint.find()
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
@@ -97,18 +91,17 @@ export const getAllComplaints = async (req, res) => {
       currentPage: page,
       perPage: limit,
       totalItems: totalCount,
-      totalPages: totalPages
+      totalPages: totalPages,
     };
 
     res.status(200).json({
       complaints: complaints,
-      pagination
+      pagination,
     });
   } catch (error) {
-    console.error('Error fetching complaints', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error fetching complaints", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
- 
 };
 
 // Controller to fetch a single complaint by ID
@@ -117,12 +110,12 @@ export const getComplaintById = async (req, res) => {
   try {
     const complaint = await Complaint.findById(id);
     if (!complaint) {
-      return res.status(404).json({ error: 'Complaint not found' });
+      return res.status(404).json({ error: "Complaint not found" });
     }
     res.status(200).json(complaint);
   } catch (error) {
-    console.error('Error fetching complaint:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error fetching complaint:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -131,17 +124,12 @@ export const updateComplaintById = async (req, res) => {
   const { id } = req.params;
   try {
     // Extract fields from request body
-    const {
-      text_content,
-      polling_unit_code,
-      impact_level,
-      urgency
-    } = req.body;
+    const { text_content, polling_unit_code, impact_level, urgency } = req.body;
 
     // Extract video, audio, and picture evidence from request body
-    const video_evidence = JSON.parse(req.body.video_evidence || '[]');
-    const audio_evidence = JSON.parse(req.body.audio_evidence || '[]');
-    const picture_evidence = JSON.parse(req.body.picture_evidence || '[]');
+    const video_evidence = JSON.parse(req.body.video_evidence || "[]");
+    const audio_evidence = JSON.parse(req.body.audio_evidence || "[]");
+    const picture_evidence = JSON.parse(req.body.picture_evidence || "[]");
 
     const updatedComplaint = await Complaint.findByIdAndUpdate(
       id,
@@ -152,19 +140,19 @@ export const updateComplaintById = async (req, res) => {
         urgency,
         video_evidence,
         audio_evidence,
-        picture_evidence
+        picture_evidence,
       },
       { new: true }
     );
 
     if (!updatedComplaint) {
-      return res.status(404).json({ error: 'Complaint not found' });
+      return res.status(404).json({ error: "Complaint not found" });
     }
 
     res.status(200).json(updatedComplaint);
   } catch (error) {
-    console.error('Error updating complaint:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error updating complaint:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -174,11 +162,11 @@ export const deleteComplaintById = async (req, res) => {
   try {
     const deletedComplaint = await Complaint.findByIdAndDelete(id);
     if (!deletedComplaint) {
-      return res.status(404).json({ error: 'Complaint not found' });
+      return res.status(404).json({ error: "Complaint not found" });
     }
-    res.status(204).json({ message: 'Complaint deleted successfully' });
+    res.status(204).json({ message: "Complaint deleted successfully" });
   } catch (error) {
-    console.error('Error deleting complaint:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error deleting complaint:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
