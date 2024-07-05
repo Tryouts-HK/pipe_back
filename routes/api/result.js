@@ -3,7 +3,7 @@ import {
   createPollingUnitResult,
   getPollingUnitResultById as getPollingUnitResultByResultId,
   getAllPollingUnitResults,
-  updatePollingUnitResult as updatePollingUnitResultId,
+  updatePollingUnitResult as updatePollingUnitResultByResultId,
   deletePollingUnitResult as deletePollingUnitByResultId,
   getAnUntaggedResult,
   getATaggedResult,
@@ -78,7 +78,7 @@ router.put(
   //   ROLE_ENCODER.VOLUNTEER_LEAD,
   //   ROLE_ENCODER.ADMIN
   // ),
-  updatePollingUnitResultId
+  updatePollingUnitResultByResultId
 );
 
 // Route to delete a polling unit result by ID

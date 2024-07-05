@@ -48,15 +48,15 @@ const pollingUnitResultSchema = new Schema(
       required: [true, "Polling Unit code is required"],
       match: [/^\d{3}$/, "Polling Unit code must be 3 digits"],
     },
-    delimeter: {
+    delimiter: {
       type: String,
       required: [true, "Please set up the delimeter code"],
       unique: [true, "There's already a record with this code"],
       validate: {
         validator: function (v) {
-          return v.length === 10;
+          return v.length === 12;
         },
-        message: "Delimeter code must be exactly 10 characters long",
+        message: "The correct code length is in the order 3-2-2-3",
       },
     },
     duplicate: {
@@ -126,6 +126,16 @@ const pollingUnitResultSchema = new Schema(
     timestamps: true,
   }
 );
+
+pollingUnitResultSchema.pre("findOneAndUpdate", function (next) {
+  console.log(this.options.runValidators);
+
+  console.log("its crazy out here");
+
+  this.options.runValidators = true;
+  console.log(this.options.runValidators);
+  next();
+});
 
 const PollingUnitResult = model("Polling_Unit_Result", pollingUnitResultSchema);
 
