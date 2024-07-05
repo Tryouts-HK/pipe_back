@@ -105,35 +105,9 @@ export const updatePollingUnitResult = async (req, res) => {
     Object.keys(processedData).map((eachKey) => {
       retrievedResult[eachKey] = processedData[eachKey];
     });
-    retrievedResult['authorId'] = req.user.id;
+    retrievedResult["authorId"] = req.user.id;
     await retrievedResult.save();
-
-    // const updatedResult = await PollingUnitResult.findOneAndUpdate(
-    //   { _id: req.params.id },
-    //   { $set: processedData },
-    //   {
-    //     new: true,
-    //     runValidators: true,
-    //     setDefaultsOnInsert: true,
-    //     upsert: true,
-    //     context: "query",
-    //   }
-    // );
-
-    // const updatedResult = await PollingUnitResult.findByIdAndUpdate(
-    //   req.params.id,
-    //   { $set: processedData },
-    //   {
-    //     new: true,
-    //     runValidators: true,
-    //     context: 'query',
-    //   }
-    // );
-    // if (!updatedResult) {
-    //   return res.status(404).json({ error: "Polling Unit Result not found" });
-    // }
     res.status(200).json({ status: "success", data: retrievedResult });
-    // res.status(200).json({ status: "success", data: updatedResult });
   } catch (error) {
     console.error("Error updating polling unit result:", error);
     res.status(400).json({ error: error.message });

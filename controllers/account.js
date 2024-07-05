@@ -39,7 +39,6 @@ export const updateProfile = async (req, res) => {
       "firstName",
       "middleName",
       "lastName",
-      "specialization",
       "contactNumber",
       "address",
     ]) {
@@ -59,6 +58,17 @@ export const updateProfile = async (req, res) => {
       ROLE_CODE_DECODER[req.user.role]
     ).UpdateProfileDetails(userId, allowedUpdates);
     res.status(200).json({ message: "success", data: result });
+  } catch (error) {
+    console.log(error);
+    const cleanedError = errorHandler(error);
+    res.status(400).json({ status: "error", message: cleanedError });
+  }
+};
+
+export const changeAccountRole = async (req, res) => {
+  try {
+    //
+    // TODO
   } catch (error) {
     console.log(error);
     const cleanedError = errorHandler(error);
