@@ -31,8 +31,8 @@ const userSchema = new Schema({
 
     },
     role: {
-        type: Number,
-        default: 1984,
+        type: [Number],
+        default: [1984],
         required: true
     },
     authType: {

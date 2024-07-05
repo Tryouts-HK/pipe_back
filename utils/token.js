@@ -6,9 +6,10 @@ export const createToken = (user, ...optional) => {
   const payload = {
     email: user.email,
     id: user._id,
-    role: user.role,
+    role: JSON.stringify(user.role),
     key: optional[0],
   };
+
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 15 });
 };
 

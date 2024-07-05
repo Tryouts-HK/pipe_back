@@ -15,14 +15,28 @@ const restrictResourceTo = (...roles) => {
       return next();
     }
 
-    const hasRole = roles.find((role) => req.user.role === role);
+    // const retrievedRole = JSON.parse(req.user.role)
+    // console.log(retrievedRole)
+    // const hasRole = roles.find((role) => req.user.role === role);
+    // if (!hasRole) {
+    //   return res
+    //     .status(403)
+    //     .json({
+    //       error: `You are not allowed to make this request`,
+    //     });
+    // }
+    const retrievedRole = JSON.parse(req.user.role);
+    console.log(retrievedRole);
+
+    const hasRole = roles.some((role) => retrievedRole.includes(role));
+
     if (!hasRole) {
-      return res
-        .status(403)
-        .json({
-          error: `You are not allowed to make this request`,
-        });
+      return res.status(403).json({
+        error: `You are not allowed to make this request`,
+      });
     }
+
+    //
     return next();
   };
 };

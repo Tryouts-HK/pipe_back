@@ -22,7 +22,7 @@ router.post("/", restrictResourceTo(), createPollingUnitResult);
 // Route to get all polling unit results with pagination
 router.get(
   "/",
-  // restrictResourceTo(ROLE_ENCODER.ADMIN),
+  // restrictResourceTo(ROLE_ENCODER.ADMIN), //real
   getAllPollingUnitResults
 );
 

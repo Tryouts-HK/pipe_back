@@ -134,13 +134,15 @@ export const local_scope = (req, res, next) => {
 
 export const jwt_scope = (req, res, next) => {
   passport.authenticate("jwt", { session: false }, (err, user, info) => {
-    // If there's an error during authentication, pass it to the next middleware.
-    // console.log("got in here interestingly");
+    // If there's an error during authentication,
+    // pass it to the next middleware.
     if (err) {
       return next(err);
     }
 
-    // If the user is not authenticated, send an unauthorized response.
+    // If the user is not authenticated,
+    // send an unauthorized response.
+
     if (!user) {
       return res
         .status(401)
