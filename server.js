@@ -28,6 +28,8 @@ app.use(
             "https://redundant-desk-hellish-government-production.pipeops.app/",
             "https://awesome-page-capable-driving-production.pipeops.app",
             "https://redundant-desk-hellish-government-production.pipeops.app",
+            "https://pinodefront.pipeops.app/",
+            "https://pinodefront.pipeops.app",
             "*"
         ],
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
