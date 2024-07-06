@@ -30,7 +30,7 @@ export const ROLE_ENCODER = {
 };
 export const ROLE_CODE_DECODER = {
   1984: "user",
-  1697: "volunteer",
+  1697: "srVolunteer",
   2001: "admin",
-  2004: "volunteer_lead",
+  2004: "srVolunteerLead",
 };

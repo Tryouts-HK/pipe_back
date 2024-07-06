@@ -1,6 +1,6 @@
-import { ROLE_CODE_DECODER } from "../utils/constant.js";
+import User from "../models/account/user.js";
+import { ROLE_CODE_DECODER, ROLE_ENCODER } from "../utils/constant.js";
 import errorHandler from "../utils/error_handler.js";
-import { switchProfile } from "../utils/switch_handler.js";
 
 export const getProfileDetails = async (req, res) => {
   try {
@@ -67,8 +67,43 @@ export const updateProfile = async (req, res) => {
 
 export const changeAccountRole = async (req, res) => {
   try {
-    //
-    // TODO
+    //check who's making the request
+    const payload = req.body;
+    // const userRole = JSON.parse(req.user.role);
+    //To be continued later
+
+
+    const foundUser = await User.findById(payload.accountId);
+
+    if (!Object.values(ROLE_CODE_DECODER).includes(payload.newRole)) {
+      return res.status(400).json({
+        status: "error",
+        message: `${payload.newRole} is not part of the accepted roles`,
+      });
+    }
+
+
+    if (!(payload.newRole == "admin")) {
+      const newRole = Object.keys(ROLE_CODE_DECODER).map((eachRole) => {
+        if (ROLE_CODE_DECODER[eachRole] == payload.newRole) {
+          return eachRole;
+        }
+      });
+      newRole.forEach((value) => {
+        if (value && !foundUser.role.includes(value)) {
+          foundUser.role.push(value);
+        }
+      });
+      await foundUser.save();
+      res
+        .status(200)
+        .json({ status: "success", message: "role uploaded successfully" });
+    } else {
+      res.status(400).json({
+        status: "error",
+        message: "upgrade to admin requires a different process",
+      });
+    }
   } catch (error) {
     console.log(error);
     const cleanedError = errorHandler(error);

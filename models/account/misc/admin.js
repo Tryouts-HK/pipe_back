@@ -1,26 +1,28 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
-import Auth from "../auth/auth.js";
-import { createToken, verifyToken } from "../../utils/token.js";
+import Auth from "../../auth/auth.js";
+import { createToken, verifyToken } from "../../../utils/token.js";
 
-// Define the volunteer schema
-const volunteerSchema = new Schema(
+// Define the Admin schema
+const adminSchema = new Schema(
   {
     firstName: {
       type: String,
-      trim: true,
     },
     middleName: {
       type: String,
-      trim: true,
     },
     lastName: {
       type: String,
-      trim: true,
     },
 
     contactNumber: {
       type: String,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
     },
     sex: {
       type: String,
@@ -29,14 +31,9 @@ const volunteerSchema = new Schema(
         message: "{VALUES} isn't allowed",
       },
     },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
     role: {
       type: Number,
-      default: 1804,
+      default: 1697,
       required: true,
     },
     address: {
@@ -51,7 +48,7 @@ const volunteerSchema = new Schema(
 );
 
 // Define a virtual property for the full name
-volunteerSchema.virtual("name").get(function () {
+adminSchema.virtual("name").get(function () {
   let fullName = this.firstName;
   if (this.middleName) {
     fullName += " " + this.middleName;
@@ -60,32 +57,14 @@ volunteerSchema.virtual("name").get(function () {
   return fullName;
 });
 
-volunteerSchema.statics.UpdateProfileDetails = async function (id, updates) {
+// Admin's Login
+adminSchema.statics.Login = async function (email, password) {
   try {
-    const volunteer = await this.findById(id);
-    if (!volunteer) {
-      throw new Error("Volunteer not found");
-    }
-    // Update the volunteer's profile details based on the updates
-    for (const key in updates) {
-      volunteer[key] = updates[key];
-    }
-
-    // Save the updated volunteer document
-    const updatedVolunteer = await volunteer.save();
-
-    return updatedVolunteer;
-  } catch (error) {
-    throw error;
-  }
-};
-
-volunteerSchema.statics.Login = async function (email, password) {
-  try {
-    const isAvailable = await this.findOne({ email });
+    const isAvailable = await this.findOne({ email }).select("+authType");
     if (isAvailable && !isAvailable.googleId) {
       const result = await Auth.findOne({ who: isAvailable._id });
       if (result) {
+        console.log("comparing password keys");
         const isAuthn = await bcrypt.compare(password, result.secret);
         if (isAuthn) {
           return isAvailable;
@@ -102,7 +81,25 @@ volunteerSchema.statics.Login = async function (email, password) {
   }
 };
 
-volunteerSchema.statics.RecoverPassword = async function (email) {
+// Update Admin's schedule
+adminSchema.statics.UpdateSchedule = async function (
+  adminId,
+  updatedAvaibility
+) {
+  try {
+    const result = await adminSchedule.findOneAndUpdate(
+      { adminId },
+      updatedAvaibility,
+      { new: true }
+    );
+    res.status(201).json({ data: result });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+adminSchema.statics.RecoverPassword = async function (email) {
   try {
     console.log(email);
     const isAvailable = await this.findOne({ email }).select("+authType");
@@ -124,19 +121,40 @@ volunteerSchema.statics.RecoverPassword = async function (email) {
   }
 };
 
-volunteerSchema.statics.ResetPassword = async function (id, password) {
+adminSchema.statics.UpdateProfileDetails = async function (id, updates) {
+  try {
+    const admin = await this.findById(id);
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+    // Update the admin's profile details based on the updates
+    for (const key in updates) {
+      admin[key] = updates[key];
+    }
+
+    // Save the updated admin document
+    const updatedAdmin = await admin.save();
+
+    return updatedAdmin;
+  } catch (error) {
+    throw error;
+  }
+};
+
+adminSchema.statics.ResetPassword = async function (id, password) {
   try {
     const updatedUser = await Auth.findOne({ who: id });
+    console.log(updatedUser);
     updatedUser.secret = password;
     updatedUser.save();
-    console.log("Password Changed");
+    console.log("success");
     return "updated";
   } catch (error) {
     throw error;
   }
 };
 
-// Create the volunteer model
-const Volunteer = model("Volunteer", volunteerSchema);
+// Create the Admin model
+const Admin = model("Admin", adminSchema);
 
-export default Volunteer;
+export default Admin;

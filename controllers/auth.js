@@ -1,7 +1,7 @@
 import passport from "passport";
 import Auth from "../models/auth/auth.js";
 import { createToken, verifyToken } from "../utils/token.js";
-import { switchProfile } from "../utils/switch_handler.js";
+// import { switchProfile } from "../utils/switch_handler.js";
 import errorHandler from "../utils/error_handler.js";
 import { ROLE_CODE_DECODER, ROLE_ENCODER } from "../utils/constant.js";
 import dotenv from "dotenv";
@@ -10,7 +10,8 @@ dotenv.config();
 export const register_post = async (req, res, next) => {
   if (req.body.password && req.body.password.length >= 8) {
     try {
-      const result = await switchProfile(req.body.role).create({
+      // const result = await switchProfile(req.body.role).create({
+      const result = await User.create({
         email: req.body.email,
         password: req.body.password,
         role: ROLE_ENCODER[req.body.role.toUpperCase()],

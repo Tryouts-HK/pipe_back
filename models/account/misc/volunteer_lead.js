@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
-import Auth from '../auth/auth.js';
-import { createToken, verifyToken } from '../../utils/token.js';
+import Auth from '../../auth/auth.js';
+import { createToken, verifyToken } from '../../../utils/token.js';
 
 // Define the volunteer schema
 const volunteerLeadSchema = new Schema({

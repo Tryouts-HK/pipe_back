@@ -1,28 +1,26 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
-import Auth from "../auth/auth.js";
-import { createToken, verifyToken } from "../../utils/token.js";
+import Auth from "../../auth/auth.js";
+import { createToken, verifyToken } from "../../../utils/token.js";
 
-// Define the Admin schema
-const adminSchema = new Schema(
+// Define the volunteer schema
+const volunteerSchema = new Schema(
   {
     firstName: {
       type: String,
+      trim: true,
     },
     middleName: {
       type: String,
+      trim: true,
     },
     lastName: {
       type: String,
+      trim: true,
     },
 
     contactNumber: {
       type: String,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
     },
     sex: {
       type: String,
@@ -31,9 +29,14 @@ const adminSchema = new Schema(
         message: "{VALUES} isn't allowed",
       },
     },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     role: {
       type: Number,
-      default: 1697,
+      default: 1804,
       required: true,
     },
     address: {
@@ -48,7 +51,7 @@ const adminSchema = new Schema(
 );
 
 // Define a virtual property for the full name
-adminSchema.virtual("name").get(function () {
+volunteerSchema.virtual("name").get(function () {
   let fullName = this.firstName;
   if (this.middleName) {
     fullName += " " + this.middleName;
@@ -57,14 +60,32 @@ adminSchema.virtual("name").get(function () {
   return fullName;
 });
 
-// Admin's Login
-adminSchema.statics.Login = async function (email, password) {
+volunteerSchema.statics.UpdateProfileDetails = async function (id, updates) {
   try {
-    const isAvailable = await this.findOne({ email }).select("+authType");
+    const volunteer = await this.findById(id);
+    if (!volunteer) {
+      throw new Error("Volunteer not found");
+    }
+    // Update the volunteer's profile details based on the updates
+    for (const key in updates) {
+      volunteer[key] = updates[key];
+    }
+
+    // Save the updated volunteer document
+    const updatedVolunteer = await volunteer.save();
+
+    return updatedVolunteer;
+  } catch (error) {
+    throw error;
+  }
+};
+
+volunteerSchema.statics.Login = async function (email, password) {
+  try {
+    const isAvailable = await this.findOne({ email });
     if (isAvailable && !isAvailable.googleId) {
       const result = await Auth.findOne({ who: isAvailable._id });
       if (result) {
-        console.log("comparing password keys");
         const isAuthn = await bcrypt.compare(password, result.secret);
         if (isAuthn) {
           return isAvailable;
@@ -81,25 +102,7 @@ adminSchema.statics.Login = async function (email, password) {
   }
 };
 
-// Update Admin's schedule
-adminSchema.statics.UpdateSchedule = async function (
-  adminId,
-  updatedAvaibility
-) {
-  try {
-    const result = await adminSchedule.findOneAndUpdate(
-      { adminId },
-      updatedAvaibility,
-      { new: true }
-    );
-    res.status(201).json({ data: result });
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-};
-
-adminSchema.statics.RecoverPassword = async function (email) {
+volunteerSchema.statics.RecoverPassword = async function (email) {
   try {
     console.log(email);
     const isAvailable = await this.findOne({ email }).select("+authType");
@@ -121,40 +124,19 @@ adminSchema.statics.RecoverPassword = async function (email) {
   }
 };
 
-adminSchema.statics.UpdateProfileDetails = async function (id, updates) {
-  try {
-    const admin = await this.findById(id);
-    if (!admin) {
-      throw new Error("Admin not found");
-    }
-    // Update the admin's profile details based on the updates
-    for (const key in updates) {
-      admin[key] = updates[key];
-    }
-
-    // Save the updated admin document
-    const updatedAdmin = await admin.save();
-
-    return updatedAdmin;
-  } catch (error) {
-    throw error;
-  }
-};
-
-adminSchema.statics.ResetPassword = async function (id, password) {
+volunteerSchema.statics.ResetPassword = async function (id, password) {
   try {
     const updatedUser = await Auth.findOne({ who: id });
-    console.log(updatedUser);
     updatedUser.secret = password;
     updatedUser.save();
-    console.log("success");
+    console.log("Password Changed");
     return "updated";
   } catch (error) {
     throw error;
   }
 };
 
-// Create the Admin model
-const Admin = model("Admin", adminSchema);
+// Create the volunteer model
+const Volunteer = model("Volunteer", volunteerSchema);
 
-export default Admin;
+export default Volunteer;
